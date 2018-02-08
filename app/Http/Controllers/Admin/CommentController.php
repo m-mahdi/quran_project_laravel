@@ -10,7 +10,7 @@ class CommentController extends Controller
 {
     public function get($page_num)
     {
-        $comments= Comment::paginate(2);
+        $comments= Comment::paginate(10);
         return view('admin.comment', ['comments' => $comments, 'comment' => false, 'page_now' => $page_num, 'all_page' => $comments['count'], 'active' => 'comment']);
 
 
