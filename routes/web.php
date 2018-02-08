@@ -12,6 +12,7 @@
 
 
 Route::group(['prefix' => 'admin', 'middleware' => 'auth_admin'], function () {
+    Route::get('comment/{page_num}', 'Admin\CommentController@get');
     Route::get('home', 'Admin\AdminController@get');
     Route::get('news/list/{page_num}', 'Admin\NewsController@get');
     Route::get('news/new', 'Admin\NewsNewController@get');
@@ -78,15 +79,11 @@ Route::post('admin/logout', 'Admin\LogoutController@logout');
 Route::get('not_found', 'Admin\NotFoundController@get');
 
 
-Route::group(['prefix' => 'user'], function () {
-
-    Route::get('home', 'User\HomeController@get');
+    Route::get('/', 'User\HomeController@get')->name('index');
     Route::post('home/post', 'User\HomeController@post');
 
     Route::get('news/details', 'User\NewsDetailsController@get');
 
-
-});
 
 Route::group(['prefix' => 'student', 'middleware' => 'auth_student'], function () {
     Route::get('home', 'Student\HomeController@get');

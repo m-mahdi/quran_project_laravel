@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\User;
 
 use App\Classes\driver\ManagementCourseAvailable;
+use App\Comment;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Classes\driver\News;
@@ -21,15 +22,23 @@ class HomeController extends Controller
         } elseif ($data['status'] == '300') {
             return view('user.index', ['news' => false]);
         } else {
-            //moskle fani
+            return view('user.index', ['news' => false]);
         }
 
     }
 
     public function post(Request $request)
     {
-        if ($request->ajax()) {
-        }
+
+        $commet=new Comment();
+        $commet->name=$request->name;
+        $commet->email=$request->email;
+        $commet->subject=$request->subject;
+        $commet->message=$request->message;
+        $commet->save();
+        session()->flash('message', 'با موفقیت ثبت شد');
+        return redirect(route('index'));
+
     }
 
 }

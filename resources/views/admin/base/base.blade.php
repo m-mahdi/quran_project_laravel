@@ -107,6 +107,12 @@
 						<p>مدیریت اخبار</p>
 					</a>
 				</li>
+				<li @if($active == 'comment')class="active"@endif>
+					<a href="/admin/comment/1">
+						<i class="flaticon-time-1"></i>
+						<p>مدیریت نظرات</p>
+					</a>
+				</li>
 				<li @if($active == 'contact_us')class="active"@endif>
 					<a href="/admin/contact_us">
 						<i class="flaticon-opened-email-envelope"></i>

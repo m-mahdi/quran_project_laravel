@@ -296,6 +296,7 @@
             </div>
         </div>
         <div class="scrollbars">
+
             @foreach($news as $item)
                 <div class="parent-news">
                     <div class="row">
@@ -387,21 +388,23 @@
             </div>
 
             <div class="col-md-5 col-md-pull-2 pull-right">
+                <form class="form-horizontal" method="POST" action="{{url('/home/post')}}">
+                    {{ csrf_field() }}
                 <div class="form">
                     <div id="sendmessage">پیام شماارسال شد. با تشکر!</div>
                     <div id="errormessage"></div>
                         <div class="form-group">
-                            <input type="text" name="name_send_message" class="form-control" id="name" placeholder="نام شما"
+                            <input type="text" name="name" class="form-control" id="name" placeholder="نام شما"
                                    data-rule="minlen:4" data-msg="Please enter at least 4 chars"/>
                             <div class="validation"></div>
                         </div>
                         <div class="form-group">
-                            <input type="email" class="form-control" name="email_sender" id="email" placeholder="ایمیل شما"
+                            <input type="email" class="form-control" name="email" id="email" placeholder="ایمیل شما"
                                    data-rule="email" data-msg="Please enter a valid email"/>
                             <div class="validation"></div>
                         </div>
                         <div class="form-group">
-                            <input type="text" class="form-control" name="subject_sender" id="subject" placeholder="موضوع"
+                            <input type="text" class="form-control" name="subject" id="subject" placeholder="موضوع"
                                    data-rule="minlen:4" data-msg="Please enter at least 8 chars of subject"/>
                             <div class="validation"></div>
                         </div>
@@ -414,6 +417,7 @@
                             <button data-title="send_message_us" type="submit" >ارسال پیام</button>
                         </div>
                 </div>
+                </form>
             </div>
 
         </div>
@@ -455,37 +459,6 @@
 
 <!-- Template Specisifc Custom Javascript File -->
 <script src="{{asset('js/user/custom.js')}}"></script>
-<script type="text/javascript">
-    $(document).ready(function () {
-        $(".scrollbars").niceScroll({cursorcolor: "#999"});
 
-        $("button[data-title='send_message_us']").click(function (e) {
-            var data = {};
-            data.name_sender = $("input[name='name_send_message']").val();
-            data.email = $("input[name='email_sender']").val();
-            data.text = $("input[name='subject_sender']").val();
-            data._token = "{{csrf_token()}}";
-            console.log(data);
-            $.ajax({
-                url: "/user/home/post",
-                type: "POST",
-                data: data,
-                success: function (response) {
-                    if (response['status']){
-                        alert(response['msg'])
-                    }else {
-                        alert(response['msg'])
-                    }
-                },
-                error: function () {
-                    alert("Error.........")
-                },
-                complete: function () {
-                }
-            });
-
-        })
-    });
-</script>
 </body>
 </html>
