@@ -455,7 +455,7 @@
 <script src="{{asset('js/user/wow.min.js')}}"></script>
 <script src="{{asset('js/user/sticky.js')}}"></script>
 <script src="{{asset('js/user/easing.min.js')}}"></script>
-<script src="{{asset('dist/js/jquery.nicescroll.min.js')}}"></script>
+<script src="{{asset('dis‍‍t/js/jquery.nicescroll.min.js')}}"></script>
 
 <!-- Template Specisifc Custom Javascript File -->
 <script src="{{asset('js/user/custom.js')}}"></script>

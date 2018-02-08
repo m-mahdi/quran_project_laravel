@@ -36,7 +36,7 @@ class HomeController extends Controller
         $commet->subject=$request->subject;
         $commet->message=$request->message;
         $commet->save();
-        session()->flash('message', 'با موفقیت ثبت شد');
+        session()->flash('message', 'با موفقیت ثبت‍‍ شد');
         return redirect(route('index'));
 
     }
