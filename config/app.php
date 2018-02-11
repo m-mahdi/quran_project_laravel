@@ -228,4 +228,6 @@ return [
 
     ],
 
+    'faker_locale' => 'fa_IR',
+
 ];

@@ -3,28 +3,43 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Comment;
+use Composer\Command\SearchCommand;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
 class CommentController extends Controller
 {
-    public function get($page_num)
+    public function get()
     {
         $comments= Comment::paginate(10);
-        return view('admin.comment', ['comments' => $comments, 'comment' => false, 'page_now' => $page_num, 'all_page' => $comments['count'], 'active' => 'comment']);
+        return view('admin.comment', ['comments' => $comments, 'active' => 'comment']);
 
+    }
+    public function destroy(Comment $comment)
+    {
+        $comment->delete();
+        return ['status' => true];
+    }
 
-        $limit = 10;
-        $obj_pagination = new pagination("comments", $page_num, $limit);
-        $comments = $obj_pagination->paginate('id');
-        $counter_comments = $page_num * $limit - $limit;
-        if ($comments['status'] == '350') {
-            return view('admin.comment', ['counter_news' => $counter_comments, 'news' => $comments['data'], 'page_now' => $page_num, 'all_page' => $comments['count'], 'active' => 'news']);
-        } elseif ($comments['status'] == '300') {
-            return view('admin.comment', ['counter_news' => $counter_comments, 'news' => false, 'page_now' => $page_num, 'all_page' => '', 'active' => 'news']);
-
-        } else {
-            //error baraye safhe moshke fani
+    public function post(Request $request)
+    {
+        if ($request->ajax()) {
+            dd($request);
+            $status = $request->input('status');
+            if ($status == 'search') {
+                $item = $request->input('item');
+                $manage = new SearchCommand();
+                $search = $manage->search($item);
+                if ($search['status'] == '350') {
+                    return response()->json(array('status' => true,
+                        'data' => $search['search']));
+                } else if ($search['status'] == '300') {
+                    return response()->json(array('status' => false));
+                } else {
+                    return response()->json(array('status' => false, 'msg' => 'خطایی در سیستم رخ داده است لطفا هر چه سریعتر این موضوع را به بخش فنی گزارش دهید.'));
+                }
+            }
         }
     }
+
 }

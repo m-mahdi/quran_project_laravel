@@ -12,7 +12,9 @@
 
 
 Route::group(['prefix' => 'admin', 'middleware' => 'auth_admin'], function () {
-    Route::get('comment/{page_num}', 'Admin\CommentController@get');
+    Route::get('comments', 'Admin\CommentController@get');
+    Route::post('comments/post', 'Admin\CommentController@post');
+    Route::delete('/comments/{comment}', ['uses' => 'Admin\CommentController@destroy', 'as' => 'admin.comment.destroy']);
     Route::get('home', 'Admin\AdminController@get');
     Route::get('news/list/{page_num}', 'Admin\NewsController@get');
     Route::get('news/new', 'Admin\NewsNewController@get');

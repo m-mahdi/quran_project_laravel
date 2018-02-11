@@ -30,6 +30,9 @@
 </head>
 
 <body>
+<div class="loader">
+	<div class="loader-spinner">Loading...</div>
+</div>
 <div class="wrapper">
 	<div class="sidebar" data-active-color="red" data-background-color="black" data-image="{{asset('img/admin/sidebar-6.jpg')}}">
 		<div class="logo">
@@ -108,7 +111,7 @@
 					</a>
 				</li>
 				<li @if($active == 'comment')class="active"@endif>
-					<a href="/admin/comment/1">
+					<a href="/admin/comments">
 						<i class="flaticon-time-1"></i>
 						<p>مدیریت نظرات</p>
 					</a>

@@ -3,6 +3,7 @@
     مدیریت نظرات
 @endsection
 @section('css')
+    <link rel="stylesheet" href="/css/loader.css"/>
     <script src="{{asset('dist/js/pagination.js')}}" type="text/javascript"></script>
 @endsection
 @section('header')
@@ -25,7 +26,7 @@
                                 <label>جستجو :</label>
                             </div>
                             <div class="col-xs-12 col-md-10 pull-right">
-                                <input name="search_news" class="form-control">
+                                <input id="myInput" onkeyup="myFunction()" name="search_news" class="form-control">
                             </div>
                         </div>
                         <div class="row">
@@ -35,51 +36,44 @@
                                         <div class="col-xs-12 col-md-6 pull-right">
                                             <div class="alert alert-info alert-with-icon" data-notify="container">
                                                 <i data-notify="icon" class="flaticon-info-sign"></i>
-                                                <span data-notify="message">هیچ خبری یافت نشد. لطفا خبر جدیدی وارد کنید.</span>
+                                                <span data-notify="message">هیچ خبری یافت نشد. لطفا نظر جدیدی وارد کنید.</span>
                                             </div>
                                         </div>
                                     </div>
                                 @else
                                     <div class="table-responsive">
-                                        <table id="" class="table">
+                                        <table id="myTable" class="table">
                                             <thead class="text-primary">
                                             <tr>
                                                 <th class="col-xs-1 text-right">ردیف</th>
-                                                <th class="col-xs-5 text-right">عنوان نظر</th>
-                                                <th class="col-xs-4 text-right">موضوع </th>
-                                                <th class="col-xs-2 text-right">عملیات</th>
+                                                <th class="col-xs-1 text-right">نام</th>
+                                                <th class="col-xs-1 text-right">ایمیل</th>
+                                                <th class="col-xs-2 text-right">موضوع </th>
+                                                <th class="col-xs-4 text-right">پیام </th>
+                                                <th class="col-xs-1 text-right">عملیات</th>
                                             </tr>
                                             </thead>
                                             <tbody data-content="content_table">
                                             @foreach($comments as $comment)
-                                                <tr data-status="">
-                                                    <td></td>
+                                                <tr data-status="" data-id="{{$comment->id}}">
+                                                    <td>{{ $loop->iteration }}</td>
                                                     <td data-id="{{$comment->id}}" class="">{{$comment->name}}</td>
+                                                    <td class="">{{$comment->email}}</td>
                                                     <td class="">{{$comment->subject}}</td>
+                                                    <td class="">{{$comment->message}}</td>
                                                     <td class="actional">
-                                                        <span data-id="{{$comment->id}}" data-title="delete_news"
+                                                        <span data-id="{{$comment->id}}" data-title="delete_comments"
+                                                              onclick="confirmDelete('{{ route('admin.comment.destroy', $comment->id) }}', '{{ $comment->id }}')"
                                                               class="flaticon-trash-2 delete_news_button"
                                                               data-toggle="tooltip" title="حذف"></span>
-                                                        &nbsp;
-                                                        <a href="/admin/news/edit/{{$comment->name}}"
-                                                           data-toggle="tooltip" title="ویرایش">
-                                                            <span class="flaticon-pencil-and-paper"></span>
-                                                        </a>
-                                                        &#160;
-                                                        <a href="#" data-toggle="tooltip" title="پیش نمایش"><span
-                                                                    class="flaticon-data-viewer"></span></a>
                                                     </td>
                                                 </tr>
                                             @endforeach
                                             </tbody>
                                         </table>
                                     </div>
-                                    <div class="row">
-                                        <div class="col-xs-12 text-center">
-                                            <div class="card-content">
-                                                <ul class="pagination"></ul>
-                                            </div>
-                                        </div>
+                                    <div class="text-center" style="direction:ltr">
+                                        {{ $comments->links() }}
                                     </div>
                                 @endif
                             </div>
@@ -110,151 +104,93 @@
 @endsection
 
 @section('javascript')
-    <script type="text/javascript">
-        $(document).ready(function () {
-            var all_page = Math.floor({{$all_page}});
-            var page_now = Math.floor({{$page_now}});
-            paginate(".pagination", all_page, page_now, 7, "/admin/news/list");
-            $('[data-toggle="tooltip"]').tooltip();
-            $("span[data-title='delete_news']").click(function (e) {
-                var $tr = $(this).closest('tr');
-                var data_id = $(this).attr('data-id');
-                swal({
-                        title: "آیا شما مطمئن هستید؟",
-                        text: "در صورت حذف خبر هیچ راه بازگشتی نخواهد بود!",
-                        type: "warning",
-                        showCancelButton: true,
-                        confirmButtonColor: "#DD6B55",
-                        confirmButtonText: "بله, حذف شود!",
-                        closeOnConfirm: false
-                    },
-                    function () {
-                        var data = {};
-                        data.status = 'delete';
-                        data.title = $("td[data-id=" + data_id + "]").text();
-                        data.id = data_id;
-                        data._token = "{{csrf_token()}}";
-                        $.ajax({
-                            url: "/admin/news/post",
-                            type: "POST",
-                            data: data,
-                            success: function (response) {
-                                if (response['status']) {
-                                    $tr.find('td').fadeOut(1000, function () {
-                                        $tr.remove();
-                                    });
-                                    swal("حذف شد!", response['msg'], "success");
-                                } else {
-                                    swal("لغو شد!", response['msg'], "error");
-                                }
-                            },
-                            error: function () {
-                                alert("Error.........")
-                            },
-                            complete: function () {
-                            }
-                        });
-                    });
+    <script src="/js/modal-generator.js"></script>
+    <script>
+        function myFunction() {
+            // Declare variables
+            var input, filter, table, tr, td, i;
+            input = document.getElementById("myInput");
+            filter = input.value.toUpperCase();
+            table = document.getElementById("myTable");
+            tr = table.getElementsByTagName("tr");
+
+            // Loop through all table rows, and hide those who don't match the search query
+            for (i = 0; i < tr.length; i++) {
+                td = tr[i].getElementsByTagName("td")[1];
+                if (td) {
+                    if (td.innerHTML.toUpperCase().indexOf(filter) > -1) {
+                        tr[i].style.display = "";
+                    } else {
+                        tr[i].style.display = "none";
+                    }
+                }
+            }
+
+        }
+
+        function confirmDelete(url, mId) {
+            event.preventDefault();
+            var btn = [
+                '<button type="button" onclick="deleteRecord(\'' + url + '\',' + mId + ')" class="btn btn-warning pull-left">حذف</button>'
+            ];
+            showSimpleModal({
+                id: 'myModal' + mId,
+                size: 'small',
+                title: 'توجه',
+                body: 'آیا برای حذف مطمئن هستید؟',
+                buttons: btn
             });
-            $("input[name='search_news']").keyup(function (event) {
-                event.preventDefault();
-                var t_body = $("tbody[data-content='content_table']");
-                var table = $('table[class="table"]');
-                var item = $(this).val();
-                $('tbody[data-title="search"]').fadeOut();
-                $('tbody[data-title="search"]').remove();
-                if (item == '') {
-                    t_body.fadeIn();
-                } else {
-                    t_body.fadeOut();
-                    var data = {};
-                    data.item = item;
-                    data.status = 'search';
-                    data._token = "{{csrf_token()}}";
-                    $.ajax({
-                        url: "/admin/news/post",
-                        type: "POST",
-                        data: data,
-                        success: function (response) {
-                            var html_string = '';
-                            if (response['status']) {
-                                html_string += '<tbody data-title="search">';
-                                for (var i = 0; i < response['data'].length; i++) {
-                                    html_string += '<tr>';
-                                    var counter = i + 1;
-                                    html_string += '<td>' + counter+ '</td>';
-                                    html_string +='<td class="">' + response['data'][i].title+ '</td>';
-                                    html_string += '<td class="">' + response['data'][i].publish_date + '</td>';
-                                    html_string += '<td class="actional">';
-                                    html_string += '<span data-id="'+ response['data'][i].id+'" data-title="delete_news" class="flaticon-trash-2 delete_student_button" data-toggle="tooltip" title="حذف"></span>';
-                                    html_string += ' &#160;';
-                                    html_string += '<a href="/admin/news/edit/'+ response['data'][i].title+'" data-toggle="tooltip" title="ویرایش">';
-                                    html_string += '<span class="flaticon-pencil-and-paper"></span>';
-                                    html_string += ' &#160;';
-                                    html_string += '<a href="#" data-toggle="tooltip" title="پیش نمایش"><span class="flaticon-data-viewer"></span></a></td>';
-                                    html_string += '</tr>';
-                                }
-                                html_string += '</tbody>';
-                                $('tbody[data-title="search"]').remove();
-                                table.append(html_string);
-                                $("span[data-title='delete_news']").click(function (e) {
-                                    var $tr = $(this).closest('tr');
-                                    var data_id = $(this).attr('data-id');
-                                    swal({
-                                            title: "آیا شما مطمئن هستید؟",
-                                            text: "در صورت حذف خبر هیچ راه بازگشتی نخواهد بود!",
-                                            type: "warning",
-                                            showCancelButton: true,
-                                            confirmButtonColor: "#DD6B55",
-                                            confirmButtonText: "بله, حذف شود!",
-                                            closeOnConfirm: false
-                                        },
-                                        function () {
-                                            var data = {};
-                                            data.status = 'delete';
-                                            data.title = $("td[data-id=" + data_id + "]").text();
-                                            data.id = data_id;
-                                            data._token = "{{csrf_token()}}";
-                                            $.ajax({
-                                                url: "/admin/news/post",
-                                                type: "POST",
-                                                data: data,
-                                                success: function (response) {
-                                                    if (response['status']) {
-                                                        $tr.find('td').fadeOut(1000, function () {
-                                                            $tr.remove();
-                                                        });
-                                                        swal("حذف شد!", response['msg'], "success");
-                                                    } else {
-                                                        swal("لغو شد!", response['msg'], "error");
-                                                    }
-                                                },
-                                                error: function () {
-                                                    alert("Error.........")
-                                                },
-                                                complete: function () {
-                                                }
-                                            });
-                                        });
-                                });
-                                $('[data-toggle="tooltip"]').tooltip();
-                            } else {
-                                html_string += '<tbody data-title="search">';
-                                html_string += '<td> هیچ موردی یافت نشد.</td>';
-                                html_string += '</tbody>';
-                                $('tbody[data-title="search"]').remove();
-                                table.append(html_string);
-                                $('[data-toggle="tooltip"]').tooltip();
-                            }
-                        },
-                        error: function () {
-                            alert("Error.........")
-                        },
-                        complete: function () {
-                        }
+        }
+
+
+        function deleteRecord(url, mId) {
+            $('#myModal' + mId).removeClass('fade').modal('hide');
+            $.ajax({
+                url: url,
+                method: 'DELETE',
+                async: true,
+                cache: false,
+                beforeSend: function (request) {
+                    request.setRequestHeader("X-CSRF-TOKEN", $('meta[name="csrf-token"]').attr('content'));
+                    $('.loader').show();
+                },
+                complete: function () {
+                    $('.loader').hide();
+                },
+                success: function (data) {
+                    if (data.status) {
+                        $('tr[data-id=' + mId + ']').remove();
+                        showSimpleModal({
+                            id: 'success-modal',
+                            size: 'small',
+                            title: 'توجه',
+                            body: 'با موفقیت حذف شد'
+                        });
+                    } else {
+                        showSimpleModal({
+                            id: 'error-modal',
+                            size: 'small',
+                            title: 'توجه',
+                            body: data.message
+                        });
+                    }
+                },
+                error: function (request, msg, error) {
+                    console.log(request, msg, error);
+                    showSimpleModal({
+                        id: 'error-modal',
+                        size: 'small',
+                        title: 'توجه',
+                        body: 'خطایی رخ داده است'
                     });
                 }
-            })
+            });
+        }
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+
         });
     </script>
 @endsection
