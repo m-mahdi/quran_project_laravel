@@ -36,8 +36,13 @@ class HomeController extends Controller
         $commet->subject=$request->subject;
         $commet->message=$request->message;
         $commet->save();
-        return redirect(route('index'));
+        return view('user.accept');
 
+    }
+
+    public function comment()
+    {
+        return view('user.comment');
     }
 
 }
