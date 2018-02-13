@@ -67,7 +67,7 @@
                 <div class="validation"></div>
             </div>
             <div class="text-center">
-                <button class="btn btn-primary" data-title="send_message_us" type="submit" >ارسال پیام</button>
+                <button class="btn btn-primary" data-title="send_message_us" type="submit" >ارسال نظر</button>
             </div>
         </div>
     </form>
