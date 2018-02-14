@@ -30,13 +30,13 @@ class HomeController extends Controller
     public function post(Request $request)
     {
 
-        $commet=new Comment();
+        $commet=new Comment();//initialize comment 
         $commet->name=$request->name;
         $commet->email=$request->email;
         $commet->subject=$request->subject;
         $commet->message=$request->message;
-        $commet->save();
-        return view('user.accept');
+        $commet->save(); //save to DB
+        return view('user.accept'); //return view
 
     }
 
